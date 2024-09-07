@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import pdfMake from 'pdfmake/build/pdfmake';
 import htmlToPdfmake from 'html-to-pdfmake';
-import logo from './assets/logo.png';
+import logo from './assets/logoPAPERZ.png';
 
 const MyPage = () => {
   const pageRef = useRef();
