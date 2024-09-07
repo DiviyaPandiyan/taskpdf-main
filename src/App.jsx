@@ -1,18 +1,15 @@
 import React, { useRef, useState, useEffect } from 'react';
 import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from './vfs_fonts.js';
 import htmlToPdfmake from 'html-to-pdfmake';
-import logo from './assets/react.png'
-
-pdfMake.vfs = pdfFonts;
+import logo from './assets/logo.png';
 
 const MyPage = () => {
   const pageRef = useRef();
   const [base64Image, setBase64Image] = useState('');
-  const imageUrl = logo;
 
-  const convertImageToBase64 = (url) => {
-    return new Promise((resolve, reject) => {
+  // Convert the image to base64 format
+  useEffect(() => {
+    const convertImageToBase64 = (imageUrl) => {
       const img = new Image();
       img.crossOrigin = 'Anonymous';
       img.onload = () => {
@@ -21,66 +18,55 @@ const MyPage = () => {
         canvas.height = img.height;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0);
-        const dataURL = canvas.toDataURL('image/jpeg');
-        resolve(dataURL);
+        setBase64Image(canvas.toDataURL('image/jpeg')); // JPEG format for compatibility
       };
-      img.onerror = (error) => reject(error);
-      img.src = url;
+      img.src = imageUrl;
+    };
+
+    convertImageToBase64(logo); // Convert the logo image when the component mounts
+  }, []);
+
+  // Handle PDF generation with the base64 image and welcome text using useRef
+  const handleGeneratePdf = () => {
+    // Get the HTML content as a string
+    const htmlContent = pageRef.current.innerHTML;
+
+    // Convert HTML to PDFMake format with custom styles
+    const pdfMakeContent = htmlToPdfmake(htmlContent, {
+      defaultStyles: {
+        h1: { fontSize: 22, bold: true, alignment: 'center', margin: [0, 0, 0, 20] },
+        img: { alignment: 'center', margin: [0, 20, 0, 20] },
+      },
     });
-  };
 
-  useEffect(() => {
-    // Convert the image to base64 when the component mounts
-    convertImageToBase64(imageUrl)
-      .then(base64 => {
-        setBase64Image(base64);
-      })
-      .catch(error => {
-        console.error('Error converting image to base64:', error);
-      });
-  }, [imageUrl]);
+    // Define the document content and styles
+    const documentDefinition = {
+      content: pdfMakeContent,
+    };
 
-  const handleGeneratePdf = async () => {
-    try {
-      // Get the HTML content as a string
-      const htmlContent = pageRef.current.innerHTML;
-
-      // Convert HTML to PDFMake format
-      const pdfMakeContent = htmlToPdfmake(htmlContent, {
-        defaultStyles: {
-          h1: { fontSize: 22, bold: true },
-          h2: { fontSize: 18, bold: true },
-          p: { fontSize: 12 },
-        },
-      });
-
-      // Define the document content and styles, including the base64 image
-      const documentDefinition = {
-        content: [
-          ...pdfMakeContent,
-        ],
-        defaultStyle: {
-          fontSize: 12,
-        },
-      };
-
-      // Generate the PDF
-      pdfMake.createPdf(documentDefinition).download('webpage-content.pdf');
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-    }
+    // Generate the PDF
+    pdfMake.createPdf(documentDefinition).download('webpage-content.pdf');
   };
 
   return (
-    <div>
+    <div style={{ textAlign: 'center', marginTop: '20px' }}>
+      {/* Content to be captured using useRef */}
       <div ref={pageRef}>
-        {/* Your entire webpage content */}
-        
+        {/* Display the welcome text */}
+        <h1 style={{ marginBottom: '20px' }}>Welcome</h1>
 
-        {base64Image && <img src={base64Image} alt="Base64 Image" width={100} />}
-        
-     
+        {/* Display the image on the webpage */}
+        {base64Image && (
+          <img
+            src={base64Image}
+            alt="Logo"
+            width={100}
+            style={{ marginBottom: '20px' }}
+          />
+        )}
       </div>
+
+      {/* Button to generate and download the PDF */}
       <button onClick={handleGeneratePdf}>Download Page as PDF</button>
     </div>
   );
