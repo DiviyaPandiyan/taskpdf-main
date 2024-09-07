@@ -75,7 +75,7 @@ const MyPage = () => {
     <div>
       <div ref={pageRef}>
         {/* Your entire webpage content */}
-        <h1 style={{ textAlign: 'center', color: '#333' }}>Welcome to My Page</h1>
+        
 
         {base64Image && <img src={base64Image} alt="Base64 Image" width={100} />}
         
