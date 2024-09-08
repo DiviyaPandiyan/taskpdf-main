@@ -8,17 +8,20 @@ const MyPage = () => {
   const [base64Image, setBase64Image] = useState("");
 
   useEffect(() => {
-    // Convert image file to base64
-    const convertImageFileToBase64 = (file) => {
-      const reader = new FileReader();
-      reader.onloadend = () => setBase64Image(reader.result);
-      reader.readAsDataURL(file);
+    // Fetch and convert the image to base64
+    const fetchAndConvertImage = async () => {
+      try {
+        const response = await fetch(logo);
+        const blob = await response.blob();
+        const reader = new FileReader();
+        reader.onloadend = () => setBase64Image(reader.result);
+        reader.readAsDataURL(blob);
+      } catch (error) {
+        console.error("Error fetching or converting image:", error);
+      }
     };
 
-    // Fetch and convert the image to base64
-    fetch(logo)
-      .then((res) => res.blob())
-      .then((blob) => convertImageFileToBase64(blob));
+    fetchAndConvertImage();
   }, []);
 
   // Generate PDF
@@ -32,7 +35,8 @@ const MyPage = () => {
 
     pdfMake.createPdf(documentDefinition).download("webpage-content.pdf");
   };
-  return(
+
+  return (
     <div style={{ textAlign: "center", marginTop: "20px" }}>
       <div ref={pageRef}>
         <h1 style={{ marginBottom: "20px", textAlign: "center" }}>Welcome</h1>
@@ -44,7 +48,6 @@ const MyPage = () => {
             style={{ marginBottom: "20px", textAlign: "center" }}
           />
         )}
-        
       </div>
       <button onClick={handleGeneratePdf}>Download Page as PDF</button>
     </div>
