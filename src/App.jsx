@@ -72,7 +72,7 @@ const MyPage = () => {
           <img
             src={base64Image}
             alt="Logo"
-            width={300}
+            width={200}
             style={{ marginBottom: "20px", textAlign: "center" }}
           />
         )}
