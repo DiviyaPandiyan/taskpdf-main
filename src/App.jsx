@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import pdfMake from "pdfmake/build/pdfmake";
 import htmlToPdfmake from "html-to-pdfmake";
-import logo from "./assets/paperz.png";
+import logo from "./assets/qi.png";
 
 // Helper function to fetch and convert image to base64
 const fetchImageAsBase64 = async (imageUrl) => {
@@ -72,7 +72,7 @@ const MyPage = () => {
           <img
             src={base64Image}
             alt="Logo"
-            width={100}
+            width={300}
             style={{ marginBottom: "20px", textAlign: "center" }}
           />
         )}
